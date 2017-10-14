@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "789408872267",
+    "project_id": "android-oauth-spring-youtube"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:789408872267:android:657141d99f6ab717",
+        "android_client_info": {
+          "package_name": "br.com.mobiplus.youtube.client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "789408872267-94iok91aa325arpi54nmjro97pkcecno.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.mobiplus.youtube.client",
+            "certificate_hash": "b1a8fb923588d77acbfdf05697af8d73a7ef16be"
+          }
+        },
+        {
+          "client_id": "789408872267-etj0gtrer39i7es99l9rdd5noaecghi8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLybJxA-izvNgdJiBr8kfNJhH7pMPyDV0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
