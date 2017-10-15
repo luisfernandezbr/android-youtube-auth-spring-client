@@ -132,7 +132,10 @@ public class SignInActivity extends AppCompatActivity implements
             updateUI(true);
 
             String idToken = acct.getIdToken();
-            Toast.makeText(this, "idToken:" + idToken, Toast.LENGTH_SHORT).show();
+            String message = "idToken:" + idToken;
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+
+            Log.d("", message);
 
         } else {
             // Signed out, show unauthenticated UI.
