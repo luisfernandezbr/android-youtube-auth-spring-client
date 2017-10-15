@@ -15,6 +15,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
@@ -56,7 +57,7 @@ public class SignInActivity extends AppCompatActivity implements
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestServerAuthCode(getString(R.string.default_web_client_id))
                 .requestScopes(new Scope("https://www.googleapis.com/auth/youtube.readonly"))
                 .build();
         // [END configure_signin]
@@ -131,11 +132,10 @@ public class SignInActivity extends AppCompatActivity implements
             mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
             updateUI(true);
 
-            String idToken = acct.getIdToken();
-            String message = "idToken:" + idToken;
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            String serverAuthCode = acct.getServerAuthCode();
+            String message = "serverAuthCode:" + serverAuthCode;
 
-            Log.d("", message);
+            Log.d("AUTH_DETAILS", message);
 
         } else {
             // Signed out, show unauthenticated UI.
