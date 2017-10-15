@@ -28,8 +28,9 @@ repositories {
 	maven { url "http://repo.maven.apache.org/maven2" }
 }
 
-
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter')
 	compile("org.springframework.boot:spring-boot-starter-web")
+	compile 'com.google.api-client:google-api-client:1.22.0'
+	compile 'com.google.apis:google-api-services-youtube:v3-rev182-1.22.0'
 }
