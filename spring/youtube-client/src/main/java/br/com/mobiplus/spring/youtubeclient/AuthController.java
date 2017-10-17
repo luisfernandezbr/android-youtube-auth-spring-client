@@ -6,6 +6,7 @@ import com.google.api.client.googleapis.auth.oauth2.*;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 
 import com.google.api.client.http.*;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
@@ -30,8 +31,12 @@ import java.util.HashMap;
 @RestController
 public class AuthController {
 
-    String CLIENT_SECRET_FILE = "src/main/resources/client_secret_hidden_google_cloud_details.apps.googleusercontent.com.json";
+    public static final String CLIENT_SECRET_FILE = "src/main/resources/client_secret_hidden_google_cloud_details.apps.googleusercontent.com.json";
 
+    public static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+
+    public static final JsonFactory JSON_FACTORY = new JacksonFactory();
+    
     String refreshToken;
 
     @PostMapping("/auth")
@@ -67,7 +72,7 @@ public class AuthController {
 
     private TokenRequest getLoginTokenRequest(String authCode) throws IOException {
 
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(Auth.JSON_FACTORY, this.getFileReader());
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, this.getFileReader());
 
         String clientId = clientSecrets.getDetails().getClientId();
         String clientSecret = clientSecrets.getDetails().getClientSecret();
@@ -75,7 +80,7 @@ public class AuthController {
         String tokenServerEncodedUrl = "https://www.googleapis.com/oauth2/v4/token";
         String redirectUri = this.getRedirectUri(clientSecrets);
 
-        TokenRequest tokenRequest = this.getLoginTokenRequest(authCode, Auth.JSON_FACTORY, Auth.HTTP_TRANSPORT, clientId, clientSecret, tokenServerEncodedUrl, redirectUri);
+        TokenRequest tokenRequest = this.getLoginTokenRequest(authCode, JSON_FACTORY, HTTP_TRANSPORT, clientId, clientSecret, tokenServerEncodedUrl, redirectUri);
         tokenRequest.set("access_type", "offline");
         return tokenRequest;
     }
@@ -123,7 +128,7 @@ public class AuthController {
 
         String tokenServerEncodedUrl = "https://www.googleapis.com/oauth2/v4/token";
 
-        TokenRequest tokenRequest = this.getLoginRefreshTokenRequest(refreshToken, Auth.JSON_FACTORY, Auth.HTTP_TRANSPORT, new GenericUrl(
+        TokenRequest tokenRequest = this.getLoginRefreshTokenRequest(refreshToken, JSON_FACTORY, HTTP_TRANSPORT, new GenericUrl(
                 tokenServerEncodedUrl));
 
         return tokenRequest;
@@ -145,7 +150,7 @@ public class AuthController {
     }
 
     private RefreshTokenRequest getLoginRefreshTokenRequest(String refreshToken, JsonFactory defaultInstance, HttpTransport transport, GenericUrl genericUrl) throws IOException {
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(Auth.JSON_FACTORY, this.getFileReader());
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, this.getFileReader());
 
         String clientId = clientSecrets.getDetails().getClientId();
         String clientSecret = clientSecrets.getDetails().getClientSecret();
@@ -159,11 +164,11 @@ public class AuthController {
     }
 
     private SubscriptionListResponse getSubscriptionListResponse(GoogleCredential credential) throws IOException {
-        YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT, Auth.JSON_FACTORY, credential)
+        YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName("youtube-cmdline-listSubscription-sample")
                 .build();
 
-        HashMap<String, String> parameters = new HashMap<String, String>();
+        HashMap<String, String> parameters = new HashMap<>();
         parameters.put("part", "snippet,contentDetails");
         parameters.put("mine", "true");
 
