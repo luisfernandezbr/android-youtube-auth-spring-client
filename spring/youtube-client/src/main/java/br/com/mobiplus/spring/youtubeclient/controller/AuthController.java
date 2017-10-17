@@ -1,5 +1,6 @@
-package br.com.mobiplus.spring.youtubeclient;
+package br.com.mobiplus.spring.youtubeclient.controller;
 
+import br.com.mobiplus.spring.youtubeclient.model.UserDTO;
 import com.google.api.client.auth.oauth2.RefreshTokenRequest;
 import com.google.api.client.auth.oauth2.TokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.*;
@@ -31,11 +32,11 @@ import java.util.HashMap;
 @RestController
 public class AuthController {
 
-    public static final String CLIENT_SECRET_FILE = "src/main/resources/client_secret_hidden_google_cloud_details.apps.googleusercontent.com.json";
+    private static final String CLIENT_SECRET_FILE = "src/main/resources/client_secret_hidden_google_cloud_details.apps.googleusercontent.com.json";
 
-    public static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+    private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
 
-    public static final JsonFactory JSON_FACTORY = new JacksonFactory();
+    private static final JsonFactory JSON_FACTORY = new JacksonFactory();
     
     String refreshToken;
 

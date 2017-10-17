@@ -1,4 +1,4 @@
-package br.com.mobiplus.spring.youtubeclient;
+package br.com.mobiplus.spring.youtubeclient.model;
 
 /**
  * Created by luisfernandez on 14/10/17.
