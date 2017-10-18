@@ -11,8 +11,8 @@ buildscript {
     ext.firebase_ui_version = '3.0.0'
     ext.play_services_version = '11.4.2'
     ext.constraint_layout_version = '1.0.2'
-    ext.multidex_version = '1.0.2'
-    ext.android_annotations_version = '4.3.1'
+    ext.retrofit_version = '2.3.0'
+    ext.okhttp_version = '3.8.1'
 
     repositories {
         google()

@@ -27,10 +27,15 @@ dependencies {
 
     implementation "com.google.android.gms:play-services-auth:$rootProject.ext.play_services_version"
 
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit_version"
+
+
+    implementation "com.squareup.okhttp3:okhttp:$rootProject.ext.okhttp_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.ext.okhttp_version"
+
+    implementation 'com.google.apis:google-api-services-youtube:v3-rev182-1.22.0'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

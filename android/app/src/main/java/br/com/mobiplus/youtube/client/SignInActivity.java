@@ -2,26 +2,31 @@ package br.com.mobiplus.youtube.client;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
+
+import br.com.mobiplus.youtube.client.http.RetrofitFacade;
+import br.com.mobiplus.youtube.client.model.AuthDTO;
+import br.com.mobiplus.youtube.client.model.subscriptionlist.Item;
+import br.com.mobiplus.youtube.client.model.subscriptionlist.SubscriptionList;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
@@ -136,6 +141,28 @@ public class SignInActivity extends AppCompatActivity implements
             String message = "serverAuthCode:" + serverAuthCode;
 
             Log.d("AUTH_DETAILS", message);
+
+            AuthDTO authDTO = new AuthDTO();
+            authDTO.setServerAuthCode(serverAuthCode);
+
+            new RetrofitFacade().listSubscribedChannels(authDTO, new Callback<SubscriptionList>() {
+                @Override
+                public void onResponse(Call<SubscriptionList> call, Response<SubscriptionList> response) {
+                    SubscriptionList body = response.body();
+                    for (int i = 0; i < body.getItems().size(); i++) {
+                        Item item = body.getItems().get(i);
+                        System.out.println(item.getSnippet().getTitle());
+                    }
+
+
+                }
+
+                @Override
+                public void onFailure(Call<SubscriptionList> call, Throwable t) {
+                    t.printStackTrace();
+                    System.out.println(t.getCause());
+                }
+            });
 
         } else {
             // Signed out, show unauthenticated UI.
