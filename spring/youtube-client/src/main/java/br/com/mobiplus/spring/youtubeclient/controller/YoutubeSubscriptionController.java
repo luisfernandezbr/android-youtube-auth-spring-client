@@ -1,12 +1,11 @@
 package br.com.mobiplus.spring.youtubeclient.controller;
 
-import br.com.mobiplus.spring.youtubeclient.model.UserDTO;
+import br.com.mobiplus.spring.youtubeclient.model.AuthDTO;
 import com.google.api.client.auth.oauth2.RefreshTokenRequest;
 import com.google.api.client.auth.oauth2.TokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.*;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
-
-import com.google.api.client.http.*;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -22,15 +21,13 @@ import javax.validation.Valid;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
 import java.util.HashMap;
 
 /**
  * Created by luisfernandez on 14/10/17.
  */
 @RestController
-public class AuthController {
+public class YoutubeSubscriptionController {
 
     private static final String CLIENT_SECRET_FILE = "src/main/resources/client_secret_hidden_google_cloud_details.apps.googleusercontent.com.json";
 
@@ -40,26 +37,27 @@ public class AuthController {
     
     String refreshToken;
 
-    @PostMapping("/auth")
+    @PostMapping("/api/subscriptions")
     @ResponseBody()
-    DeferredResult<ResponseEntity<SubscriptionListResponse>> doLogin(@Valid @RequestBody UserDTO userDTO, Errors errors) {
+    DeferredResult<ResponseEntity<SubscriptionListResponse>> listSubscriptions(@Valid @RequestBody AuthDTO authDTO, Errors errors) {
         final DeferredResult<ResponseEntity<SubscriptionListResponse>> deferredResult = new DeferredResult<>();
 
         try {
-            SubscriptionListResponse subscriptionListResponse = this.requestLogin(userDTO.getIdToken());
+            SubscriptionListResponse subscriptionListResponse = this.requestLogin(authDTO.getServerAuthCode());
             ResponseEntity<SubscriptionListResponse> responseEntity = new ResponseEntity<>(subscriptionListResponse, null, HttpStatus.OK);
             deferredResult.setResult(responseEntity);
 
             return deferredResult;
         } catch (IOException e) {
             e.printStackTrace();
+            deferredResult.setErrorResult("" + e.getMessage());
         }
 
-        return null;
+        return deferredResult;
     }
 
-    private SubscriptionListResponse requestLogin(String authCode) throws IOException {
-        TokenRequest tokenRequest = this.getLoginTokenRequest(authCode);
+    private SubscriptionListResponse requestLogin(String serverAuthCode) throws IOException {
+        TokenRequest tokenRequest = this.getLoginTokenRequest(serverAuthCode);
 
         GoogleTokenResponse tokenResponse = (GoogleTokenResponse) tokenRequest.execute();
         String accessToken = tokenResponse.getAccessToken();
@@ -95,23 +93,23 @@ public class AuthController {
         return clientSecrets.getDetails().getRedirectUris().get(0);
     }
 
-    @GetMapping("/authRefresh")
-    @ResponseBody()
-    DeferredResult<ResponseEntity<SubscriptionListResponse>> doLoginRefresh() {
-        final DeferredResult<ResponseEntity<SubscriptionListResponse>> deferredResult = new DeferredResult<>();
-
-        try {
-            SubscriptionListResponse subscriptionListResponse = this.requestLoginRefresh(refreshToken);
-            ResponseEntity<SubscriptionListResponse> responseEntity = new ResponseEntity<>(subscriptionListResponse, null, HttpStatus.OK);
-            deferredResult.setResult(responseEntity);
-
-            return deferredResult;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
+//    @GetMapping("/authRefresh")
+//    @ResponseBody()
+//    DeferredResult<ResponseEntity<SubscriptionListResponse>> doLoginRefresh() {
+//        final DeferredResult<ResponseEntity<SubscriptionListResponse>> deferredResult = new DeferredResult<>();
+//
+//        try {
+//            SubscriptionListResponse subscriptionListResponse = this.requestLoginRefresh(refreshToken);
+//            ResponseEntity<SubscriptionListResponse> responseEntity = new ResponseEntity<>(subscriptionListResponse, null, HttpStatus.OK);
+//            deferredResult.setResult(responseEntity);
+//
+//            return deferredResult;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return null;
+//    }
 
     private SubscriptionListResponse requestLoginRefresh(String refreshToken) throws IOException {
         TokenRequest tokenRequest = this.getLoginRefreshTokenRequest(refreshToken);
@@ -181,51 +179,10 @@ public class AuthController {
             subscriptionsListMySubscriptionsRequest.setMine(mine);
         }
 
+        subscriptionsListMySubscriptionsRequest.setMaxResults(50L);
+
         SubscriptionListResponse response = subscriptionsListMySubscriptionsRequest.execute();
         System.out.println(response);
         return response;
-    }
-
-    private void validateIdToken(String idTokenString) throws GeneralSecurityException, IOException {
-JacksonFactory jacksonFactory = new JacksonFactory();
-
-
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new HttpTransport() {
-            @Override
-            protected LowLevelHttpRequest buildRequest(String method, String url) throws IOException {
-                return null;
-            }
-        }, jacksonFactory)
-                .setAudience(Collections.singletonList(""))
-                // Or, if multiple clients access the backend:
-                //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
-                .build();
-
-        // (Receive idTokenString by HTTPS POST)
-
-        GoogleIdToken idToken = verifier.verify(idTokenString);
-
-        if (idToken != null) {
-            Payload payload = idToken.getPayload();
-
-            // Print user identifier
-            String userId = payload.getSubject();
-            System.out.println("User ID: " + userId);
-
-            // Get profile information from payload
-            String email = payload.getEmail();
-            boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
-            String name = (String) payload.get("name");
-            String pictureUrl = (String) payload.get("picture");
-            String locale = (String) payload.get("locale");
-            String familyName = (String) payload.get("family_name");
-            String givenName = (String) payload.get("given_name");
-
-            // Use or store profile information
-            // ...
-
-        } else {
-            System.out.println("Invalid ID token.");
-        }
     }
 }
