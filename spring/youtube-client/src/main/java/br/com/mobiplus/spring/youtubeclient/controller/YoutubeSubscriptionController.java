@@ -1,10 +1,11 @@
 package br.com.mobiplus.spring.youtubeclient.controller;
 
 import br.com.mobiplus.spring.youtubeclient.model.AuthDTO;
-import com.google.api.client.auth.oauth2.RefreshTokenRequest;
 import com.google.api.client.auth.oauth2.TokenRequest;
-import com.google.api.client.googleapis.auth.oauth2.*;
-import com.google.api.client.http.GenericUrl;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -14,7 +15,10 @@ import com.google.api.services.youtube.model.SubscriptionListResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.validation.Valid;
@@ -93,46 +97,6 @@ public class YoutubeSubscriptionController {
         return clientSecrets.getDetails().getRedirectUris().get(0);
     }
 
-//    @GetMapping("/authRefresh")
-//    @ResponseBody()
-//    DeferredResult<ResponseEntity<SubscriptionListResponse>> doLoginRefresh() {
-//        final DeferredResult<ResponseEntity<SubscriptionListResponse>> deferredResult = new DeferredResult<>();
-//
-//        try {
-//            SubscriptionListResponse subscriptionListResponse = this.requestLoginRefresh(refreshToken);
-//            ResponseEntity<SubscriptionListResponse> responseEntity = new ResponseEntity<>(subscriptionListResponse, null, HttpStatus.OK);
-//            deferredResult.setResult(responseEntity);
-//
-//            return deferredResult;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return null;
-//    }
-
-    private SubscriptionListResponse requestLoginRefresh(String refreshToken) throws IOException {
-        TokenRequest tokenRequest = this.getLoginRefreshTokenRequest(refreshToken);
-
-        GoogleTokenResponse tokenResponse = (GoogleTokenResponse) tokenRequest.execute();
-        String accessToken = tokenResponse.getAccessToken();
-
-        // Use access token to call API
-        GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
-
-        return this.getSubscriptionListResponse(credential);
-    }
-
-    private TokenRequest getLoginRefreshTokenRequest(String refreshToken) throws IOException {
-
-        String tokenServerEncodedUrl = "https://www.googleapis.com/oauth2/v4/token";
-
-        TokenRequest tokenRequest = this.getLoginRefreshTokenRequest(refreshToken, JSON_FACTORY, HTTP_TRANSPORT, new GenericUrl(
-                tokenServerEncodedUrl));
-
-        return tokenRequest;
-    }
-
     private FileReader getFileReader() throws FileNotFoundException {
         return new FileReader(CLIENT_SECRET_FILE);
     }
@@ -146,20 +110,6 @@ public class YoutubeSubscriptionController {
                 clientSecret,
                 authCode,
                 redirectUri);
-    }
-
-    private RefreshTokenRequest getLoginRefreshTokenRequest(String refreshToken, JsonFactory defaultInstance, HttpTransport transport, GenericUrl genericUrl) throws IOException {
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, this.getFileReader());
-
-        String clientId = clientSecrets.getDetails().getClientId();
-        String clientSecret = clientSecrets.getDetails().getClientSecret();
-
-        return new GoogleRefreshTokenRequest(
-                transport,
-                defaultInstance,
-                refreshToken,
-                clientId,
-                clientSecret);
     }
 
     private SubscriptionListResponse getSubscriptionListResponse(GoogleCredential credential) throws IOException {
