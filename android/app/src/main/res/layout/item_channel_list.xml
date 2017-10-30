@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recyclerView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingRight="16dp"
+    android:paddingLeft="16dp"
+    android:scrollbars="vertical"
+    tools:showIn="@layout/activity_list">
+
+    <ImageView
+        android:id="@+id/imageChannelAvatar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginRight="16dp"
+        android:scaleType="fitXY"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:layout_centerVertical="true"
+        android:id="@+id/textChannelName"
+        android:layout_toRightOf="@+id/imageChannelAvatar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="#000"
+        tools:ignore="RtlHardcoded" />
+</RelativeLayout>
+
+
+

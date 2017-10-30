@@ -153,6 +153,7 @@ public class SignInActivity extends AppCompatActivity implements
                         Item item = body.getItems().get(i);
                         System.out.println(item.getSnippet().getTitle());
                     }
+                    ListActivity.start(getApplicationContext(), body);
 
 
                 }

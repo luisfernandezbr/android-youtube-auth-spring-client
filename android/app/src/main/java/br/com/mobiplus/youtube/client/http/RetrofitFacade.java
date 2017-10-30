@@ -14,10 +14,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitFacade {
 
-    private static final String BASE_URL = "http://192.168.100.149:8080";
+    private static final String BASE_URL = "http://192.168.100.195:8080";
 
     private Retrofit retrofit;
-    private StadiumsService service;
+    private SubscriptionService service;
 
     public RetrofitFacade() {
         this.retrofit = new Retrofit.Builder()
@@ -26,7 +26,7 @@ public class RetrofitFacade {
                 .client(this.getClient())
                 .build();
 
-        this.service = this.retrofit.create(StadiumsService.class);
+        this.service = this.retrofit.create(SubscriptionService.class);
     }
 
     private OkHttpClient getClient() {
@@ -44,7 +44,7 @@ public class RetrofitFacade {
     }
 
     public void listSubscribedChannels(AuthDTO authDTO, Callback<SubscriptionList> callback) {
-        Call<SubscriptionList> call = this.service.listStadiums(authDTO);
+        Call<SubscriptionList> call = this.service.listSubscriptions(authDTO);
         call.enqueue(callback);
     }
 }
